@@ -1,0 +1,259 @@
+---
+title: "OMDb programming overview"
+author: "H. David Shea"
+date: "`r format(Sys.time(), '%d %b %Y')`"
+output:
+  html_document:
+    fig.align: center
+    fig_caption: yes
+    fig_height: 5
+    fig_width: 9
+    highlight: tango
+    theme: united
+    #toc: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(knitr)
+
+knitr::opts_chunk$set(
+    comment = "#>", 
+    collapse = TRUE, 
+    message = FALSE,
+    fig.width = 8,
+    fig.asp = ((1 + sqrt(5)) / 2) - 1, # the golden ratio - technically, the b proportion of a+b when a is 1
+    out.width = "70%",
+    fig.align = "center"
+)
+
+qik_kable <- function(fld, fnm) {
+    if (!is.na(fld)) {
+        str_split(fld, ",[ ]*")[[1]] %>%
+            as_tibble() %>%
+            transmute_(fnm = "value") %>%
+            kable()
+    }
+}
+
+source("utils.R")
+
+if(!set_api_key()) {
+    stop("set_api_key() requies either a passed in OMDb API KEY or one stored in .cache/code.csv", 
+         call. = FALSE)
+}
+```
+
+## Request by title
+
+### Movie
+
+```{r by_title_movie, include=TRUE, warning=FALSE}
+entry <- get_by_title("Midnight in Paris", type = "movie")
+```
+
+```{r by_title_output_movie, warning=FALSE, echo=FALSE}
+entry %>%
+    select(-Plot, -Poster, -Actors, -Director, -Writer, 
+           -Genre, -Production, -Language, -Country, - Website, -totalSeasons) %>%
+    kable(caption = entry$Title)
+
+entry %>% 
+        select(Plot) %>% 
+        kable()
+
+str_split(entry$Actors, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Actors = value) %>%
+    kable()
+
+str_split(entry$Director, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Director = value) %>%
+    kable()
+
+str_split(entry$Writer, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Writer = value) %>%
+    kable()
+
+str_split(entry$Production, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Production = value) %>%
+    kable()
+
+str_split(entry$Language, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Language = value) %>%
+    kable()
+
+str_split(entry$Country, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Country = value) %>%
+    kable()
+
+str_split(entry$Genre, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Genre = value) %>%
+    kable()
+```
+
+### Series
+
+```{r by_title_series, include=TRUE, warning=FALSE}
+entry <- get_by_title("Doctor Who", type = "series")
+```
+
+```{r by_title_outputseries, warning=FALSE, echo=FALSE}
+entry %>%
+    select(-Plot, -Poster, -Actors, -Director, -Writer, 
+           -Genre, -Production, -Language, -Country, - Website, -totalSeasons) %>%
+    kable(caption = entry$Title)
+
+entry %>% 
+        select(Plot) %>% 
+        kable()
+
+str_split(entry$Actors, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Actors = value) %>%
+    kable()
+
+str_split(entry$Director, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Director = value) %>%
+    kable()
+
+str_split(entry$Writer, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Writer = value) %>%
+    kable()
+
+str_split(entry$Production, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Production = value) %>%
+    kable()
+
+str_split(entry$Language, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Language = value) %>%
+    kable()
+
+str_split(entry$Country, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Country = value) %>%
+    kable()
+
+str_split(entry$Genre, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Genre = value) %>%
+    kable()
+```
+
+## Request by id
+
+### Movie
+
+```{r by_id_movie, include=TRUE, warning=FALSE}
+entry <- get_by_id("tt0073486")
+```
+
+```{r by_id_output_movie, warning=FALSE, echo=FALSE}
+entry %>%
+    select(-Plot, -Poster, -Actors, -Director, -Writer, 
+           -Genre, -Production, -Language, -Country, - Website, -totalSeasons) %>%
+    kable(caption = entry$Title)
+
+entry %>% 
+        select(Plot) %>% 
+        kable()
+
+str_split(entry$Actors, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Actors = value) %>%
+    kable()
+
+str_split(entry$Director, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Director = value) %>%
+    kable()
+
+str_split(entry$Writer, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Writer = value) %>%
+    kable()
+
+str_split(entry$Production, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Production = value) %>%
+    kable()
+
+str_split(entry$Language, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Language = value) %>%
+    kable()
+
+str_split(entry$Country, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Country = value) %>%
+    kable()
+
+str_split(entry$Genre, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Genre = value) %>%
+    kable()
+```
+
+### Series
+
+```{r by_id_series, include=TRUE, warning=FALSE}
+entry <- get_by_id("tt0453422")
+```
+
+```{r by_id_output_series, warning=FALSE, echo=FALSE}
+entry %>%
+    select(-Plot, -Poster, -Actors, -Director, -Writer, 
+           -Genre, -Production, -Language, -Country, - Website, -totalSeasons) %>%
+    kable(caption = entry$Title)
+
+entry %>% 
+        select(Plot) %>% 
+        kable()
+
+str_split(entry$Actors, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Actors = value) %>%
+    kable()
+
+str_split(entry$Director, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Director = value) %>%
+    kable()
+
+str_split(entry$Writer, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Writer = value) %>%
+    kable()
+
+str_split(entry$Production, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Production = value) %>%
+    kable()
+
+str_split(entry$Language, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Language = value) %>%
+    kable()
+
+str_split(entry$Country, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Country = value) %>%
+    kable()
+
+str_split(entry$Genre, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Genre = value) %>%
+    kable()
+```
