@@ -3,16 +3,16 @@ title: "OMDb programming overview"
 author: "H. David Shea"
 date: "`r format(Sys.time(), '%d %b %Y')`"
 output:
+  pdf_document:
+    toc: yes
   html_document:
     fig.align: center
     fig_caption: yes
     fig_height: 5
     fig_width: 9
     highlight: tango
-    theme: united
-    #toc: yes
-  pdf_document:
-    toc: yes
+    theme: spacelab
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -46,15 +46,15 @@ if(!set_api_key()) {
 }
 ```
 
+# {.tabset .tabset-fade}
+
 ## Request by title
 
 ### Movie
 
 ```{r by_title_movie, include=TRUE, warning=FALSE}
 entry <- get_by_title("Midnight in Paris", type = "movie")
-```
 
-```{r by_title_output_movie, warning=FALSE, echo=FALSE}
 entry %>%
     select(-Plot, -Poster, -Actors, -Director, -Writer, 
            -Genre, -Production, -Language, -Country, - Website, -totalSeasons) %>%
@@ -104,9 +104,7 @@ str_split(entry$Genre, ",[ ]*")[[1]] %>%
 
 ```{r by_title_series, include=TRUE, warning=FALSE}
 entry <- get_by_title("Doctor Who", type = "series")
-```
 
-```{r by_title_outputseries, warning=FALSE, echo=FALSE}
 entry %>%
     select(-Plot, -Poster, -Actors, -Director, -Writer, 
            -Genre, -Production, -Language, -Country, - Website, -totalSeasons) %>%
@@ -158,9 +156,7 @@ str_split(entry$Genre, ",[ ]*")[[1]] %>%
 
 ```{r by_id_movie, include=TRUE, warning=FALSE}
 entry <- get_by_id("tt0073486")
-```
 
-```{r by_id_output_movie, warning=FALSE, echo=FALSE}
 entry %>%
     select(-Plot, -Poster, -Actors, -Director, -Writer, 
            -Genre, -Production, -Language, -Country, - Website, -totalSeasons) %>%
@@ -210,9 +206,7 @@ str_split(entry$Genre, ",[ ]*")[[1]] %>%
 
 ```{r by_id_series, include=TRUE, warning=FALSE}
 entry <- get_by_id("tt0453422")
-```
 
-```{r by_id_output_series, warning=FALSE, echo=FALSE}
 entry %>%
     select(-Plot, -Poster, -Actors, -Director, -Writer, 
            -Genre, -Production, -Language, -Country, - Website, -totalSeasons) %>%
@@ -256,4 +250,69 @@ str_split(entry$Genre, ",[ ]*")[[1]] %>%
     as_tibble() %>%
     transmute(Genre = value) %>%
     kable()
+```
+
+### Game
+
+```{r by_id_game, include=TRUE, warning=FALSE}
+
+entry %>%
+    select(-Plot, -Poster, -Actors, -Director, -Writer, 
+           -Genre, -Production, -Language, -Country, - Website, -totalSeasons) %>%
+    kable(caption = entry$Title)
+
+entry %>% 
+        select(Plot) %>% 
+        kable()
+
+str_split(entry$Actors, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Actors = value) %>%
+    kable()
+
+str_split(entry$Director, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Director = value) %>%
+    kable()
+
+str_split(entry$Writer, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Writer = value) %>%
+    kable()
+
+str_split(entry$Production, ",[ ]*")[[1]] %>%
+    as_tibble() %>% 
+    transmute(Production = value) %>%
+    kable()
+
+str_split(entry$Language, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Language = value) %>%
+    kable()
+
+str_split(entry$Country, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Country = value) %>%
+    kable()
+
+str_split(entry$Genre, ",[ ]*")[[1]] %>%
+    as_tibble() %>%
+    transmute(Genre = value) %>%
+    kable()
+```
+
+## Search by title
+
+```{r search_by_title, include=TRUE, warning=FALSE}
+s <- "Fast & Furious"
+p <- 1
+results <- tibble::tibble(.rows = 0)
+while(!identical((res <- search_by_title(s, type="movie", page=p)), tibble::tibble(.rows = 0))) {
+    results <- rbind(results, res)
+    p <- p + 1
+}
+
+results %>%
+    arrange(Title, Year) %>% 
+    kable(caption = str_c("Entries with '",s,"' in the title."))
 ```

@@ -2,7 +2,7 @@
 library(magrittr)
 
 get_base_path <- function(){
-    "http://www.omdbapi.com/"
+    "https://www.omdbapi.com/"
 }
 
 set_api_key <- function(api_key=NULL) {
@@ -92,7 +92,7 @@ get_by_args <- function(base_path, args) {
         httr::content(as = "parsed")
 
     if(test$Response == "False") {
-        message(test$Error)
+        message("Entry not found.")
     } else {
         # Ratings is a list and when there are multiple entries, as_tibble will create multiple rows
         # So we add flattened Ratings back after flattening
@@ -172,12 +172,29 @@ get_by_title <- function(title, type=NULL, year=NULL, plot="short", api_key=get_
     get_by_args(get_base_path(), args)
 }
 
-# if(!set_api_key()) {
-#     stop("set_api_key() requies either a passed in OMDb API KEY or one stored in .cache/code.csv",
-#          call. = FALSE)
-# }
-#
-# x <- get_by_id("tt1605783")
-# y <- get_by_id("tt0453422")
-# z <- get_by_id("tt1222324")
+search_by_title <- function(title, type=NULL, year=NULL, page=NULL, api_key=get_api_key()) {
+    args <- list(
+        s = title,
+        type = type,
+        y = year,
+        page = page,
+        r = "json",
+        apikey = api_key
+    )
 
+    rval <- tibble::tibble(.rows = 0)
+
+    res <- httr::GET(get_base_path(), query = args)
+
+    httr::stop_for_status(res)
+
+    test <- res %>%
+        httr::content(as = "parsed")
+
+    if((test$Response != "False") && ("Search" %in% names(test))) {
+        rval <- dplyr::bind_rows(lapply(test$Search, tibble::as_tibble, stringsAsFactors = FALSE)) %>%
+                dplyr::select(-Poster)
+    }
+
+    rval
+}
